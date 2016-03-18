@@ -11,6 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::resource('imports', 'ImportController');
+Route::resource('scenes', 'ScenesController');
+Route::resource('tags', 'TagController');
+Route::resource('thumbnails', 'ThumbnailController');
+Route::resource('user', 'UserController');
+Route::resource('sites', 'SiteController');
+Route::resource('affiliates', 'AffiliatesController');
+Route::resource('/', 'HomeController');
+
