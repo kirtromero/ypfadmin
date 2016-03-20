@@ -19,7 +19,7 @@
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header">Tables</h1>
+        <h1 class="page-header">Scenes</h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -28,7 +28,7 @@
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                DataTables Advanced Tables
+                All scenes
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body">

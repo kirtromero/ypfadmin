@@ -45,41 +45,58 @@ class ImportController extends Controller
 
         foreach ($xml->channel->item as $key => $item)
         {
-            $scene = new Scene();
-            $scene->title = $item->title;
-            $scene->embed = $item->embed;
-            $scene->site_id = $request->input( 'site_id', 1 );
-            $scene->affiliate_id = $request->input( 'affiliate_id', 1);
-            $scene->duration = $item->duration;
-            $scene->link = $item->link;
-            $scene->primary_thumbnail = $item->thumb;
-            $scene->save();
+            $count = Scene::where('link',"=", $item->link)->count();
 
-            $tags = trim($item->keywords);
-            $tagsAr = explode(",", $tags);
-            $textAr = array_filter($tagsAr, 'trim');
-            $tagIds = array();
-
-            foreach($textAr as $tagtext)
+            if($count == 0)
             {
-                $tagCount = Tag::where('name', '=', $tagtext)->count();
-                if($tagCount == 0)
+                $scene = new Scene();
+                $scene->title = $item->title;
+                $scene->embed = $item->embed;
+                $scene->site_id = $request->input( 'site_id', 1 );
+                $scene->affiliate_id = $request->input( 'affiliate_id', 1);
+                $scene->duration = $item->duration;
+                $scene->link = $item->link;
+                $scene->primary_thumbnail = $item->thumb;
+                $scene->save();
+
+                $tags = trim($item->keywords);
+                $tagsAr = explode(",", $tags);
+                $textAr = array_filter($tagsAr, 'trim');
+                $tagIds = array();
+
+                foreach($textAr as $tagtext)
                 {
-                    $tag = new Tag;
-                    $tag->name = $tagtext;
-                    $tag->save();
+                    $tagCount = Tag::where('name', '=', $tagtext)->count();
+                    if($tagCount == 0)
+                    {
+                        $tag = new Tag;
+                        $tag->name = $tagtext;
+                        $tag->save();
+                    }
+
+                    $tag = Tag::where('name', '=', $tagtext)->first();
+                    $tagIds[] = $tag->id;
                 }
 
-                $tag = Tag::where('name', '=', $tagtext)->first();
-                $tagIds[] = $tag->id;
+                $scene->tag()->sync($tagIds);
+
+                $thumbnail = new Thumbnail;
+                $thumbnail->url = $item->thumb;
+                $thumbnail->scene_id = $scene->id;
+                $thumbnail->save();
             }
-
-            $scene->tag()->sync($tagIds);
-
-            $thumbnail = new Thumbnail;
-            $thumbnail->url = $item->thumb;
-            $thumbnail->scene_id = $scene->id;
-            $thumbnail->save();
+            else
+            {
+                $scene = Scene::where('link',"=", $item->link)->first();
+                $scene->title = $item->title;
+                $scene->embed = $item->embed;
+                $scene->site_id = $request->input( 'site_id', 1 );
+                $scene->affiliate_id = $request->input( 'affiliate_id', 1);
+                $scene->duration = $item->duration;
+                $scene->link = $item->link;
+                $scene->primary_thumbnail = $item->thumb;
+                $scene->save();
+            }
         }
 
         return redirect('scenes')->with('reply', 'Import Successfully')->with('reply_class','success');
