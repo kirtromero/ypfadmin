@@ -11,12 +11,19 @@
 |
 */
 
-Route::resource('imports', 'ImportController');
-Route::resource('scenes', 'ScenesController');
-Route::resource('tags', 'TagController');
-Route::resource('thumbnails', 'ThumbnailController');
-Route::resource('user', 'UserController');
-Route::resource('sites', 'SiteController');
-Route::resource('affiliates', 'AffiliatesController');
-Route::resource('/', 'HomeController');
+Route::controllers([
+	'auth' => 'Auth\AuthController',
+	'password' => 'Auth\PasswordController',
+]);
 
+Route::group(['middleware' => ['auth']], function()
+{
+	Route::resource('imports', 'ImportController');
+	Route::resource('scenes', 'ScenesController');
+	Route::resource('tags', 'TagController');
+	Route::resource('thumbnails', 'ThumbnailController');
+	Route::resource('user', 'UserController');
+	Route::resource('sites', 'SiteController');
+	Route::resource('affiliates', 'AffiliatesController');
+	Route::resource('/', 'HomeController');
+});

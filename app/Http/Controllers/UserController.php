@@ -26,7 +26,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        $data['page_title'] = "Add New user";
+        return view('users.add', $data);
     }
 
     /**

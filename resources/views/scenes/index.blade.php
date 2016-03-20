@@ -54,7 +54,11 @@
                                 <td>{{ $scene->created_at }}</td>
                                 <td>
                                     <a href="/scenes/{{ $scene->id }}/edit" class="btn btn-xs btn-primary">Edit</a>
-                                    <a href="/scenes/{{ $scene->id }}/delete" class="btn btn-xs btn-danger">Delete</a>
+                                    <form action="/scene/{{ $scene->id }}" method="POST">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                        <button class="btn btn-xs btn-danger" type="submit">Delete</button>
+                                    </form>
                                 </td>
                             </tr>
                             @endforeach

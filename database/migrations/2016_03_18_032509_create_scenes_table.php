@@ -21,7 +21,10 @@ class CreateScenesTable extends Migration
             $table->string('duration');
             $table->decimal('rating',5,1);
             $table->integer('clicks');
+            $table->string('link');
+            $table->string('primary_thumbnail');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

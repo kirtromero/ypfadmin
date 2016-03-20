@@ -19,16 +19,6 @@ class ImportController extends Controller
      */
     public function index()
     {
-
-        $scene = new Scene;
-        $scene->title = "test";
-        $scene->duration = "20:12";
-        $scene->links = "http://www.pornhub.com/view_video.php?viewkey=177783772";
-        $scene->affiliate_id = "1";
-        $scene->site_id = "1";
-        $scene->primary_thumbnail = "http://i0.cdn2b.image.pornhub.phncdn.com/m=e0YH8daaaa/videos/201404/25/26008842/original/12.jpg";
-        $scene->save();
-
         $data['page_title'] = "Imports";
         return view('imports.index', $data);
     }
@@ -51,7 +41,48 @@ class ImportController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $xml = simplexml_load_file($request->input('url'), 'SimpleXMLElement', LIBXML_NOCDATA);
+
+        foreach ($xml->channel->item as $key => $item)
+        {
+            $scene = new Scene();
+            $scene->title = $item->title;
+            $scene->embed = $item->embed;
+            $scene->site_id = $request->input( 'site_id', 1 );
+            $scene->affiliate_id = $request->input( 'affiliate_id', 1);
+            $scene->duration = $item->duration;
+            $scene->link = $item->link;
+            $scene->primary_thumbnail = $item->thumb;
+            $scene->save();
+
+            $tags = trim($item->keywords);
+            $tagsAr = explode(",", $tags);
+            $textAr = array_filter($tagsAr, 'trim');
+            $tagIds = array();
+
+            foreach($textAr as $tagtext)
+            {
+                $tagCount = Tag::where('name', '=', $tagtext)->count();
+                if($tagCount == 0)
+                {
+                    $tag = new Tag;
+                    $tag->name = $tagtext;
+                    $tag->save();
+                }
+
+                $tag = Tag::where('name', '=', $tagtext)->first();
+                $tagIds[] = $tag->id;
+            }
+
+            $scene->tag()->sync($tagIds);
+
+            $thumbnail = new Thumbnail;
+            $thumbnail->url = $item->thumb;
+            $thumbnail->scene_id = $scene->id;
+            $thumbnail->save();
+        }
+
+        return redirect('scenes')->with('reply', 'Import Successfully')->with('reply_class','success');
     }
 
     /**
