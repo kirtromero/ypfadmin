@@ -20,7 +20,7 @@
 
 	@yield('page-css')
 
-	<link rel="stylesheet" type="text/css" href="/dist/css/sb-admin-2.css">
+	<link rel="stylesheet" type="text/css" href="http://youpornflix.com/ypf/public/dist/css/sb-admin-2.css">
 
 	<body>
 		<div id="wrapper">
