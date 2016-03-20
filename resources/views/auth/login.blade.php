@@ -42,6 +42,7 @@
                         <h3 class="panel-title">Please Sign In</h3>
                     </div>
                     <div class="panel-body">
+                        {{ public_path() }}
                         <form id="yppform" class="smart-form client-form"
                         	role="form"
 							method="post"
