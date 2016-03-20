@@ -5,7 +5,7 @@
 *
 -->
 @section('page-css')
-<link rel="stylesheet" type="text/css" href="/bower_components/morrisjs/morris.css">
+<link rel="stylesheet" type="text/css" href="http://youpornflix.com/ypf/public/bower_components/morrisjs/morris.css">
 @stop
 
 
@@ -101,8 +101,8 @@
 -->
 @section('page-javascripts')
 <!-- DataTables JavaScript -->
-<script src="/bower_components/datatables/media/js/jquery.dataTables.min.js"></script>
-<script src="/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js"></script>
+<script src="http://youpornflix.com/ypf/public/bower_components/datatables/media/js/jquery.dataTables.min.js"></script>
+<script src="http://youpornflix.com/ypf/public/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js"></script>
 <script>
     $(document).ready(function() {
         $('#dataTables').DataTable({

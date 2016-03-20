@@ -16,7 +16,7 @@
 	<!-- Font Awesome -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
-	<link href="{{ asset('/bower_components/metisMenu/dist/metisMenu.min.css') }}" rel="stylesheet">
+	<link href="http://youpornflix.com/ypf/public/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
 
 	@yield('page-css')
 
@@ -41,6 +41,6 @@
 	@yield('page-javascripts')
 
     <!-- Custom Theme JavaScript -->
-    <script src="{{ asset('/dist/js/sb-admin-2.js') }}"></script>
+    <script src="http://youpornflix.com/ypf/public/dist/js/sb-admin-2.js"></script>
 </body>
 </html>
