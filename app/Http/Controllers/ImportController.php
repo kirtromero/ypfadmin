@@ -66,7 +66,7 @@ class ImportController extends Controller
 
                 foreach($textAr as $tagtext)
                 {
-                    $slug = str_slug($item->title, "-");
+                    $slug = str_slug($tagtext, "-");
                     $tagCount = Tag::where('slug', '=', $slug)->count();
                     if($tagCount == 0)
                     {
