@@ -73,10 +73,15 @@ class ImportController extends Controller
                         $tag->name = str_replace("-"," ",$tagtext);
                         $tag->slug = str_slug($item->title, "-");
                         $tag->save();
+
+                        $tagIds[] = $tag->id;
+                    }
+                    else
+                    {
+                        $tag = Tag::where('name', '=', $tagtext)->first();
+                        $tagIds[] = $tag->id;
                     }
 
-                    $tag = Tag::where('name', '=', $tagtext)->first();
-                    $tagIds[] = $tag->id;
                 }
 
                 $scene->tag()->sync($tagIds);
