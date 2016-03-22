@@ -79,7 +79,7 @@ class ImportController extends Controller
                     }
                     else
                     {
-                        $tag = Tag::where('name', '=', $tagtext)->first();
+                        $tag = Tag::where('slug', '=', $slug)->first();
                         $tagIds[] = $tag->id;
                     }
 
