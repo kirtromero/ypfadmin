@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Tag;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -16,7 +17,9 @@ class TagController extends Controller
      */
     public function index()
     {
-        //
+        $data['tags'] = Tag::get();
+        $data['page_title'] = "Tags";
+        return view('tag.index', $data);
     }
 
     /**
@@ -83,5 +86,20 @@ class TagController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function activateTag(Request $request)
+    {
+        if($request->has('id'))
+        {
+            $count = Tag::where('active','=', 1)->count();
+
+            $tag = Tag::find($request->get('id'));
+            $tag->active = ($tag->active == 0) ? 1 : 0;
+            $tag->sort = $count + 1;
+            $tag->save();
+
+            return "Tag activated";
+        }
     }
 }

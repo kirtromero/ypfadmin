@@ -19,11 +19,20 @@ Route::controllers([
 Route::group(['middleware' => ['auth']], function()
 {
 	Route::resource('imports', 'ImportController');
+
 	Route::resource('scenes', 'ScenesController');
+
+	//Tags
 	Route::resource('tags', 'TagController');
+	Route::post('tags/activate', 'TagController@activateTag');
+
 	Route::resource('thumbnails', 'ThumbnailController');
+
 	Route::resource('user', 'UserController');
+
 	Route::resource('sites', 'SiteController');
+
 	Route::resource('affiliates', 'AffiliatesController');
+
 	Route::resource('/', 'HomeController');
 });

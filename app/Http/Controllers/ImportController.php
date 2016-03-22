@@ -70,7 +70,8 @@ class ImportController extends Controller
                     if($tagCount == 0)
                     {
                         $tag = new Tag;
-                        $tag->name = $tagtext;
+                        $tag->name = str_replace("-"," ",$tagtext);
+                        $tag->slug = str_slug($item->title, "-");
                         $tag->save();
                     }
 
