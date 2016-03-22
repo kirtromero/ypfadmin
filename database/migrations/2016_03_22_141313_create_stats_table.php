@@ -14,7 +14,7 @@ class CreateStatsTable extends Migration
     {
         Schema::create('stats', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('affilate_id');
+            $table->integer('affiliate_id');
             $table->integer('scene_id');
             $table->string('user_agent');
             $table->timestamps();
