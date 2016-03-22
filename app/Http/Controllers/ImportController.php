@@ -106,7 +106,7 @@ class ImportController extends Controller
             }
         }
 
-        return redirect('scenes')->with('reply', 'Import Successfully')->with('reply_class','success');
+        return redirect('imports')->with('reply', 'Import Successfully')->with('reply_class','success');
     }
 
     /**

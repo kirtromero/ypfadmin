@@ -23,8 +23,10 @@ Route::group(['middleware' => ['auth']], function()
 	Route::resource('scenes', 'ScenesController');
 
 	//Tags
+	Route::get('tags/all', 'TagController@ajaxTags');
 	Route::resource('tags', 'TagController');
 	Route::post('tags/activate', 'TagController@activateTag');
+
 
 	Route::resource('thumbnails', 'ThumbnailController');
 

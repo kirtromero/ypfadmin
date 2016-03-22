@@ -21,7 +21,7 @@
 
 	@yield('page-css')
 
-	<link rel="stylesheet" type="text/css" href="http://youpornflix.com/ypf/public/dist/css/sb-admin-2.css">
+	<link rel="stylesheet" type="text/css" href="{{ url('dist/css/sb-admin-2.css') }}">
 
 	<body>
 		<div id="wrapper">
@@ -50,6 +50,6 @@
 	@yield('page-javascripts')
 
     <!-- Custom Theme JavaScript -->
-    <script src="http://youpornflix.com/ypf/public/dist/js/sb-admin-2.js"></script>
+    <script src="{{ url('dist/js/sb-admin-2.js') }}"></script>
 </body>
 </html>

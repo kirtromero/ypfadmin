@@ -102,4 +102,73 @@ class TagController extends Controller
             return "Tag activated";
         }
     }
+
+    public function ajaxTags(Request $request)
+    {
+        $search = $request->input('search','');
+        $skip = $request->input('start');
+        $limit = $request->input('length');
+        $order = $request->input('order');
+        $orderDir = $order[0]['dir'];
+
+        switch ($order[0]['column']) {
+            case '0':
+                $orderBy = "name";
+                break;
+            case '1':
+                $orderBy = "sort";
+                break;
+            case '2':
+                $orderBy = "active";
+                break;
+            default:
+                $orderBy = "name";
+                break;
+        }
+
+        if($search)
+        {
+            $iTotalDisplayRecords = Tag::where('name',"like","%". $search['value'] ."%")->count();
+            $tags = Tag::where('name',"like","%". $search['value'] ."%")->orderBy($orderBy, $orderDir)->skip($skip)->take($limit)->get();
+            $iTotalRecords = $tags->count();
+        }
+        else
+        {
+            $iTotalDisplayRecords = Tag::count();
+            $tags = Tag::orderBy($orderBy, $orderDir)->skip($skip)->take($limit)->get();
+            $iTotalRecords = $tags->count();
+        }
+
+        $data['iTotalRecords'] = $iTotalRecords;
+        $data['iTotalDisplayRecords'] = $iTotalDisplayRecords;
+
+        foreach ($tags as $key => $tag) {
+
+            $html = "";
+            if($tag->active == 0)
+            {
+                $html .= '<a href="/tags/'.$tag->id.'/edit" data-id="'.$tag->id.'" class="btn btn-xs btn-info activate">Activate</a>';
+            }
+            else
+            {
+                $html .= '<a href="/tags/'.$tag->id.'/edit" data-id="'.$tag->id.'" class="btn btn-xs btn-warning activate">Deactivate</a>';
+            }
+
+            $html .= '<a href="/tags/'.$tag->id.'/edit" class="btn btn-xs btn-primary">Edit</a>';
+            $html .= '<form action="/tags/'.$tag->id.'" method="POST">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                        <button class="btn btn-xs btn-danger" type="submit">Delete</button>
+                    </form>';
+
+            $data['data'][] = array(
+                                'name' => $tag->name,
+                                'sort' => $tag->sort,
+                                'active' => $tag->active,
+                                'html' => $html
+                                );
+        }
+
+        return response()->json($data);
+    }
 }
