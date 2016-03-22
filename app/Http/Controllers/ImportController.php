@@ -66,12 +66,13 @@ class ImportController extends Controller
 
                 foreach($textAr as $tagtext)
                 {
-                    $tagCount = Tag::where('name', '=', $tagtext)->count();
+                    $slug = str_slug($item->title, "-");
+                    $tagCount = Tag::where('slug', '=', $slug)->count();
                     if($tagCount == 0)
                     {
                         $tag = new Tag;
                         $tag->name = str_replace("-"," ",$tagtext);
-                        $tag->slug = str_slug($item->title, "-");
+                        $tag->slug = $slug;
                         $tag->save();
 
                         $tagIds[] = $tag->id;
