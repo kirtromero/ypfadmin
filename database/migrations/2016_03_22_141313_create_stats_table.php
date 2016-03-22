@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddSlugTagsTable extends Migration
+class CreateStatsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,12 @@ class AddSlugTagsTable extends Migration
      */
     public function up()
     {
-        Schema::table('tags', function ($table) {
-            $table->string('slug')->after('name');
+        Schema::create('stats', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('affilate_id');
+            $table->integer('scene_id');
+            $table->string('user_agent');
+            $table->timestamps();
         });
     }
 
@@ -24,6 +28,6 @@ class AddSlugTagsTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::drop('stats');
     }
 }
