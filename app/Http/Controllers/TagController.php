@@ -62,7 +62,8 @@ class TagController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data['tag'] = Tag::findOrFail($id);
+        return view('tag.edit', $data);
     }
 
     /**
@@ -74,7 +75,16 @@ class TagController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $tag = Tag::findOrFail($id);
+        $tag->name = $request->input('name');
+        $tag->slug = $request->input('slug');
+        $tag->active = $request->input('active');
+        $tag->thumbnail_id = $request->input('thumbnail_id');
+        $tag->sort = $request->input('sort');
+        $tag->save();
+
+
+        return redirect('tags/' . $tag->id .'/edit')->with('reply', 'Tag update Successfully')->with('reply_class','success');
     }
 
     /**
