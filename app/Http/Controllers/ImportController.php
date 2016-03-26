@@ -187,7 +187,7 @@ class ImportController extends Controller
             $thumbnails = explode(";", $item[$thumbnails_key]);
             $tags = $item[$keywords_key];
             $duration = $item[$duration_key];
-            $primary_thumbnail = isset($item[$primary_thumbnail_key) ? $item[$primary_thumbnail_key : $thumbnails[1];
+            $primary_thumbnail = isset($item[$primary_thumbnail_key) ? $item[$primary_thumbnail_key]: $thumbnails[1];
 
             $scene = new Scene();
             $scene->title = $title;
