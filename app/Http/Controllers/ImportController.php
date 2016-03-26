@@ -228,7 +228,7 @@ class ImportController extends Controller
             $scene->tag()->sync($tagIds);
 
 
-            foreach ($thumbnail as $key => $value) {
+            foreach ($thumbnails as $key => $value) {
                 $thumbnail = new Thumbnail;
                 $thumbnail->url = $value;
                 $thumbnail->scene_id = $scene->id;
