@@ -19,6 +19,7 @@ Route::controllers([
 Route::group(['middleware' => ['auth']], function()
 {
 	Route::resource('imports', 'ImportController');
+	Route::post('imports/dump', 'ImportController@postfeeds');
 
 	Route::resource('scenes', 'ScenesController');
 

@@ -153,4 +153,83 @@ class ImportController extends Controller
     {
         //
     }
+
+
+    public function postfeeds(Request $request)
+    {
+        $format = $request->get('dump_format');
+        $affiliate_id = $request->get('affiliate_id');
+        $site_id = $request->get('site_id');
+
+        $dump = explode("\n", $request->get('dump'));
+
+        $format = explode("|", $format);
+
+        $embed_key = array_search('{embed}', $format);
+        $title_key = array_search('{title}', $format);
+        $primary_thumbnail_key = array_search('{primary_thumbnail}', $format);
+        $link_key = array_search('{link}', $format);
+        $duration_key = array_search('{duration}', $format);
+        $keywords_key = array_search('{keywords}', $format);
+        $thumbnails_key = array_search('{thumbnails}', $format);
+
+        foreach($dump as $items)
+        {
+            $item = explode("|", $items);
+
+            $link = $item[$link_key];
+            $embed = $item[$embed_key];
+            $title = $item[$title_key];
+            $primary_thumbnail = $item[$primary_thumbnail_key];
+            $thumbnails = $item[$thumbnails_key];
+            $tags = $item[$keywords_key];
+            $duration = $item[$duration_key];
+
+            $scene = new Scene();
+            $scene->title = $title;
+            $scene->embed = $embed;
+            $scene->site_id = $request->input( 'site_id', 1 );
+            $scene->affiliate_id = $request->input( 'affiliate_id', 1);
+            $scene->duration = $duration;
+            $scene->link = $link;
+            $scene->primary_thumbnail = $primary_thumbnail;
+            $scene->save();
+
+            $tags = trim($tags);
+            $tagsAr = explode(";", $tags);
+            $textAr = array_filter($tagsAr, 'trim');
+            $tagIds = array();
+
+            foreach($textAr as $tagtext)
+            {
+                $slug = str_slug($tagtext, "-");
+                $tagCount = Tag::where('slug', '=', $slug)->count();
+                if($tagCount == 0)
+                {
+                    $tag = new Tag;
+                    $tag->name = str_replace("-"," ",$tagtext);
+                    $tag->slug = $slug;
+                    $tag->save();
+
+                    $tagIds[] = $tag->id;
+                }
+                else
+                {
+                    $tag = Tag::where('slug', '=', $slug)->first();
+                    $tagIds[] = $tag->id;
+                }
+
+            }
+
+            $scene->tag()->sync($tagIds);
+
+            $thumbnail = explode(";", $thumbnails);
+            foreach ($thumbnail as $key => $value) {
+                $thumbnail = new Thumbnail;
+                $thumbnail->url = $value;
+                $thumbnail->scene_id = $scene->id;
+                $thumbnail->save();
+            }
+        }
+    }
 }
