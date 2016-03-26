@@ -184,10 +184,10 @@ class ImportController extends Controller
             $link = $item[$link_key];
             $embed = $item[$embed_key];
             $title = $item[$title_key];
-            $primary_thumbnail = $item[$primary_thumbnail_key];
-            $thumbnails = $item[$thumbnails_key];
+            $thumbnails = explode(";", $item[$thumbnails_key]);
             $tags = $item[$keywords_key];
             $duration = $item[$duration_key];
+            $primary_thumbnail = isset($item[$primary_thumbnail_key) ? $item[$primary_thumbnail_key : $thumbnails[1];
 
             $scene = new Scene();
             $scene->title = $title;
@@ -227,7 +227,7 @@ class ImportController extends Controller
 
             $scene->tag()->sync($tagIds);
 
-            $thumbnail = explode(";", $thumbnails);
+
             foreach ($thumbnail as $key => $value) {
                 $thumbnail = new Thumbnail;
                 $thumbnail->url = $value;
