@@ -182,7 +182,7 @@ class ImportController extends Controller
             $item = explode("|", $items);
 
             $link = $item[$link_key];
-            $embed = $item[$embed_key];
+            $embed = isset($item[$embed_key]) ? $item[$embed_key] : NULL;
             $title = $item[$title_key];
             $thumbnails = explode(";", $item[$thumbnails_key]);
             $tags = $item[$keywords_key];
