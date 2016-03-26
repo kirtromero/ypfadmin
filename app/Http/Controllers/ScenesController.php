@@ -18,7 +18,7 @@ class ScenesController extends Controller
      */
     public function index()
     {
-        $data['scenes'] = Scene::all();
+        $data['scenes'] = Scene::orderBy('created_at',"desc")->get();
         $data['page_title'] = "Scenes";
         return view('scenes.index', $data);
     }
