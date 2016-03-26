@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Affiliate;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -16,7 +17,8 @@ class AffiliatesController extends Controller
      */
     public function index()
     {
-        //
+        $data['page_title'] = "Affiliates";
+        return view('affiliates.index', $data);
     }
 
     /**
@@ -26,7 +28,8 @@ class AffiliatesController extends Controller
      */
     public function create()
     {
-        //
+        $data['page_title'] = "Affiliates";
+        return view('affiliates.create', $data);
     }
 
     /**
@@ -37,7 +40,12 @@ class AffiliatesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $affiliate = new Affiliate();
+        $affiliate->name = $request->input('name');
+        $affiliate->url = $request->input('url');
+        $affiliate->save();
+
+        return redirect('affiliates')->with('reply', 'Affiliate added Successfully')->with('reply_class','success');
     }
 
     /**

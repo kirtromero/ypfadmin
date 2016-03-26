@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Site;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -16,7 +17,8 @@ class SiteController extends Controller
      */
     public function index()
     {
-        //
+        $data['page_title'] = "Sites";
+        return view('sites.index', $data);
     }
 
     /**
@@ -26,7 +28,8 @@ class SiteController extends Controller
      */
     public function create()
     {
-        //
+        $data['page_title'] = "Sites";
+        return view('sites.create', $data);
     }
 
     /**
@@ -37,7 +40,12 @@ class SiteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $site = new Site();
+        $site->name = $request->input('name');
+        $site->url = $request->input('url');
+        $site->save();
+
+        return redirect('sites')->with('reply', 'Site added Successfully')->with('reply_class','success');
     }
 
     /**

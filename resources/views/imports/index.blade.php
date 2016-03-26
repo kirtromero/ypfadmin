@@ -73,14 +73,17 @@
                     <div class="form-group">
                         <label>Site</label>
                         <select id="site_id" class="form-control">
-                            <option value="1">YourPornFlix</option>
+                            @foreach($sites as $site)
+                            <option value="{{  $site->id }}">{{  $site->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Affiliate</label>
                         <select id="affiliate_id" class="form-control">
-                            <option value="1">Hub Traffic</option>
-                            <option value="2">Xhamster</option>
+                            @foreach($affiliates as $affiliate)
+                            <option value="{{  $affiliate->id }}">{{  $affiliate->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="form-group">

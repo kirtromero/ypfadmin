@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Scene;
+use App\Affiliate;
+use App\Site;
 use App\Tag;
 use App\Thumbnail;
 use App\Http\Requests;
@@ -19,6 +21,8 @@ class ImportController extends Controller
      */
     public function index()
     {
+        $data['affiliates'] = Affiliate::all();
+        $data['sites'] = Site::all();
         $data['page_title'] = "Imports";
         return view('imports.index', $data);
     }
