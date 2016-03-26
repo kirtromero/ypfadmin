@@ -181,58 +181,65 @@ class ImportController extends Controller
         {
             $item = explode("|", $items);
 
-            $link = $item[$link_key];
-            $embed = isset($item[$embed_key]) ? $item[$embed_key] : NULL;
-            $title = $item[$title_key];
             $thumbnails = explode(";", $item[$thumbnails_key]);
-            $tags = $item[$keywords_key];
-            $duration = $item[$duration_key];
             $primary_thumbnail = isset($item[$primary_thumbnail_key]) ? $item[$primary_thumbnail_key] : $thumbnails[1];
 
-            $scene = new Scene();
-            $scene->title = $title;
-            $scene->embed = $embed;
-            $scene->site_id = $request->input( 'site_id', 1 );
-            $scene->affiliate_id = $request->input( 'affiliate_id', 1);
-            $scene->duration = $duration;
-            $scene->link = $link;
-            $scene->primary_thumbnail = $primary_thumbnail;
-            $scene->save();
-
-            $tags = trim($tags);
-            $tagsAr = explode(";", $tags);
-            $textAr = array_filter($tagsAr, 'trim');
-            $tagIds = array();
-
-            foreach($textAr as $tagtext)
+            if(file_exists($primary_thumbnail))
             {
-                $slug = str_slug($tagtext, "-");
-                $tagCount = Tag::where('slug', '=', $slug)->count();
-                if($tagCount == 0)
+                $link = $item[$link_key];
+                $embed = isset($item[$embed_key]) ? $item[$embed_key] : NULL;
+                $title = $item[$title_key];
+
+                $tags = $item[$keywords_key];
+                $duration = $item[$duration_key];
+
+
+
+                $scene = new Scene();
+                $scene->title = $title;
+                $scene->embed = $embed;
+                $scene->site_id = $request->input( 'site_id', 1 );
+                $scene->affiliate_id = $request->input( 'affiliate_id', 1);
+                $scene->duration = $duration;
+                $scene->link = $link;
+                $scene->primary_thumbnail = $primary_thumbnail;
+                $scene->save();
+
+                $tags = trim($tags);
+                $tagsAr = explode(";", $tags);
+                $textAr = array_filter($tagsAr, 'trim');
+                $tagIds = array();
+
+                foreach($textAr as $tagtext)
                 {
-                    $tag = new Tag;
-                    $tag->name = str_replace("-"," ",$tagtext);
-                    $tag->slug = $slug;
-                    $tag->save();
+                    $slug = str_slug($tagtext, "-");
+                    $tagCount = Tag::where('slug', '=', $slug)->count();
+                    if($tagCount == 0)
+                    {
+                        $tag = new Tag;
+                        $tag->name = str_replace("-"," ",$tagtext);
+                        $tag->slug = $slug;
+                        $tag->save();
 
-                    $tagIds[] = $tag->id;
+                        $tagIds[] = $tag->id;
+                    }
+                    else
+                    {
+                        $tag = Tag::where('slug', '=', $slug)->first();
+                        $tagIds[] = $tag->id;
+                    }
+
                 }
-                else
-                {
-                    $tag = Tag::where('slug', '=', $slug)->first();
-                    $tagIds[] = $tag->id;
+
+                $scene->tag()->sync($tagIds);
+
+
+                foreach ($thumbnails as $key => $value) {
+                    $thumbnail = new Thumbnail;
+                    $thumbnail->url = $value;
+                    $thumbnail->scene_id = $scene->id;
+                    $thumbnail->save();
                 }
-
-            }
-
-            $scene->tag()->sync($tagIds);
-
-
-            foreach ($thumbnails as $key => $value) {
-                $thumbnail = new Thumbnail;
-                $thumbnail->url = $value;
-                $thumbnail->scene_id = $scene->id;
-                $thumbnail->save();
             }
         }
     }
