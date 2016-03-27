@@ -96,8 +96,7 @@
                 responsive: true
         });
 
-        $(".delete-btn").each(function(){
-
+        $("#datatables").on('click','.delete-btn', function(){
             $(this).click(function(){
             var id = $(this).data('id');
                 $.ajax({
