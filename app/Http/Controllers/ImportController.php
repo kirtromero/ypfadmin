@@ -206,7 +206,15 @@ class ImportController extends Controller
                 $scene->save();
 
                 $tags = trim($tags);
-                $tagsAr = explode(";", $tags);
+                if(strpos($tags,";"))
+                {
+                    $tagsAr = explode(";", $tags);
+                }
+                else
+                {
+                    $tagsAr = explode(",", $tags);
+                }
+
                 $textAr = array_filter($tagsAr, 'trim');
                 $tagIds = array();
 
