@@ -174,26 +174,36 @@ class ImportController extends Controller
         $primary_thumbnail_key = array_search('{primary_thumbnail}', $format);
         $link_key = array_search('{link}', $format);
         $duration_key = array_search('{duration}', $format);
-        $keywords_key = array_search('{keywords}', $format);
+        $category_key = array_search('{categories}', $format);
         $thumbnails_key = array_search('{thumbnails}', $format);
+        $keywords_key = array_search('{keywords}', $format);
 
         foreach($dump as $items)
         {
             $item = explode("|", $items);
 
-            $thumbnails = explode(";", $item[$thumbnails_key]);
-            $primary_thumbnail = isset($item[$primary_thumbnail_key]) ? $item[$primary_thumbnail_key] : $thumbnails[1];
+            if(isset($item[$thumbnails_key]))
+            {
+                $thumbnails = explode(";", $item[$thumbnails_key]);
+                $primary_thumbnail = isset($item[$primary_thumbnail_key]) ? $item[$primary_thumbnail_key] : $thumbnails[1];
+            }
+            else
+            {
+                $primary_thumbnail = isset($item[$primary_thumbnail_key]) ? $item[$primary_thumbnail_key] : "";
+            }
 
-            if(file_exists($primary_thumbnail))
+
+            $file_headers = @get_headers($primary_thumbnail);
+
+            if($file_headers[0] != 'HTTP/1.0 404 Not Found')
             {
                 $link = $item[$link_key];
                 $embed = isset($item[$embed_key]) ? $item[$embed_key] : NULL;
                 $title = $item[$title_key];
 
                 $tags = $item[$keywords_key];
+                $categories = $item[$category_key];
                 $duration = $item[$duration_key];
-
-
 
                 $scene = new Scene();
                 $scene->title = $title;
@@ -215,7 +225,21 @@ class ImportController extends Controller
                     $tagsAr = explode(",", $tags);
                 }
 
-                $textAr = array_filter($tagsAr, 'trim');
+                $cleanTags = array_filter($tagsAr, 'trim');
+
+                $categories = trim($categories);
+                if(strpos($categories,";"))
+                {
+                    $categoriesAr = explode(";", $categories);
+                }
+                else
+                {
+                    $categoriesAr = explode(",", $categories);
+                }
+
+                $cleanCategories = array_filter($tagsAr, 'trim');
+
+                $textAr = array_unique( array_merge( $cleanCategories, $cleanTags ) );
                 $tagIds = array();
 
                 foreach($textAr as $tagtext)
@@ -241,14 +265,20 @@ class ImportController extends Controller
 
                 $scene->tag()->sync($tagIds);
 
-
-                foreach ($thumbnails as $key => $value) {
+                foreach ($thumbnails as $key => $value)
+                {
                     $thumbnail = new Thumbnail;
                     $thumbnail->url = $value;
                     $thumbnail->scene_id = $scene->id;
                     $thumbnail->save();
                 }
             }
+            else
+            {
+                return redirect('imports')->with('errors', 'Import Error')->with('reply_class','danger');
+            }
+
+            return redirect('imports')->with('reply', 'Import Successfully')->with('reply_class','success');
         }
     }
 }

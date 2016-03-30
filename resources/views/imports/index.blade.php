@@ -17,6 +17,8 @@
 *
 -->
 @section('content')
+
+{{-- Display Success Messages --}}
 <div class="row">
     <div class="col-lg-12">
         <h1 class="page-header">Imports</h1>
@@ -68,7 +70,7 @@
                     <input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
                     <div class="form-group">
                         <label>Dump Format</label>
-                        <input class="form-control" name="dump_format" value="{embed}|{title}|{primary_thumbnail}|{thumbnails}|{duration}|{keywords}|{link}">
+                        <input class="form-control" name="dump_format" value="{embed}|{title}|{categories}|{primary_thumbnail}|{thumbnails}|{duration}|{keywords}|{link}">
                     </div>
                     <div class="form-group">
                         <label>Site</label>

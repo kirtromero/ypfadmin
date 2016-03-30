@@ -25,9 +25,11 @@
 
 	<body>
 		<div id="wrapper">
-		@include('nav')
+			@include('nav')
 
 			<div id="page-wrapper">
+			@include('alerts')
+
 			@yield('content')
 			</div>
 
