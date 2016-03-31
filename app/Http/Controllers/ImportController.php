@@ -182,100 +182,105 @@ class ImportController extends Controller
         {
             $item = explode("|", $items);
 
-            if(isset($item[$thumbnails_key]))
+            $count = Scene::where('link','=', $item[$link_key] )->count();
+
+            if($count == 0)
             {
-                $thumbnails = explode(";", $item[$thumbnails_key]);
-                $primary_thumbnail = isset($item[$primary_thumbnail_key]) ? $item[$primary_thumbnail_key] : $thumbnails[1];
-            }
-            else
-            {
-                $primary_thumbnail = isset($item[$primary_thumbnail_key]) ? $item[$primary_thumbnail_key] : "";
-            }
-
-
-            $file_headers = @get_headers($primary_thumbnail);
-
-            if($file_headers[0] != 'HTTP/1.0 404 Not Found')
-            {
-                $link = $item[$link_key];
-                $embed = isset($item[$embed_key]) ? $item[$embed_key] : NULL;
-                $title = $item[$title_key];
-
-                $tags = $item[$keywords_key];
-                $categories = $item[$category_key];
-                $duration = $item[$duration_key];
-
-                $scene = new Scene();
-                $scene->title = $title;
-                $scene->embed = $embed;
-                $scene->site_id = $request->input( 'site_id', 1 );
-                $scene->affiliate_id = $request->input( 'affiliate_id', 1);
-                $scene->duration = $duration;
-                $scene->link = $link;
-                $scene->primary_thumbnail = $primary_thumbnail;
-                $scene->save();
-
-                $tags = trim($tags);
-                if(strpos($tags,";"))
+                if(isset($item[$thumbnails_key]))
                 {
-                    $tagsAr = explode(";", $tags);
+                    $thumbnails = explode(";", $item[$thumbnails_key]);
+                    $primary_thumbnail = isset($item[$primary_thumbnail_key]) ? $item[$primary_thumbnail_key] : $thumbnails[1];
                 }
                 else
                 {
-                    $tagsAr = explode(",", $tags);
+                    $primary_thumbnail = isset($item[$primary_thumbnail_key]) ? $item[$primary_thumbnail_key] : "";
                 }
 
-                $cleanTags = array_filter($tagsAr, 'trim');
 
-                $categories = trim($categories);
-                if(strpos($categories,";"))
+                $file_headers = @get_headers($primary_thumbnail);
+
+                if($file_headers[0] != 'HTTP/1.0 404 Not Found')
                 {
-                    $categoriesAr = explode(";", $categories);
-                }
-                else
-                {
-                    $categoriesAr = explode(",", $categories);
-                }
+                    $link = $item[$link_key];
+                    $embed = isset($item[$embed_key]) ? $item[$embed_key] : NULL;
+                    $title = $item[$title_key];
 
-                $cleanCategories = array_filter($tagsAr, 'trim');
+                    $tags = $item[$keywords_key];
+                    $categories = $item[$category_key];
+                    $duration = $item[$duration_key];
 
-                $textAr = array_unique( array_merge( $cleanCategories, $cleanTags ) );
-                $tagIds = array();
+                    $scene = new Scene();
+                    $scene->title = $title;
+                    $scene->embed = $embed;
+                    $scene->site_id = $request->input( 'site_id', 1 );
+                    $scene->affiliate_id = $request->input( 'affiliate_id', 1);
+                    $scene->duration = $duration;
+                    $scene->link = $link;
+                    $scene->primary_thumbnail = $primary_thumbnail;
+                    $scene->save();
 
-                foreach($textAr as $tagtext)
-                {
-                    $slug = str_slug($tagtext, "-");
-                    $tagCount = Tag::where('slug', '=', $slug)->count();
-                    if($tagCount == 0)
+                    $tags = trim($tags);
+                    if(strpos($tags,";"))
                     {
-                        $tag = new Tag;
-                        $tag->name = str_replace("-"," ",$tagtext);
-                        $tag->slug = $slug;
-                        $tag->save();
-
-                        $tagIds[] = $tag->id;
+                        $tagsAr = explode(";", $tags);
                     }
                     else
                     {
-                        $tag = Tag::where('slug', '=', $slug)->first();
-                        $tagIds[] = $tag->id;
+                        $tagsAr = explode(",", $tags);
+                    }
+
+                    $cleanTags = array_filter($tagsAr, 'trim');
+
+                    $categories = trim($categories);
+                    if(strpos($categories,";"))
+                    {
+                        $categoriesAr = explode(";", $categories);
+                    }
+                    else
+                    {
+                        $categoriesAr = explode(",", $categories);
+                    }
+
+                    $cleanCategories = array_filter($tagsAr, 'trim');
+
+                    $textAr = array_unique( array_merge( $cleanCategories, $cleanTags ) );
+                    $tagIds = array();
+
+                    foreach($textAr as $tagtext)
+                    {
+                        $slug = str_slug($tagtext, "-");
+                        $tagCount = Tag::where('slug', '=', $slug)->count();
+                        if($tagCount == 0)
+                        {
+                            $tag = new Tag;
+                            $tag->name = str_replace("-"," ",$tagtext);
+                            $tag->slug = $slug;
+                            $tag->save();
+
+                            $tagIds[] = $tag->id;
+                        }
+                        else
+                        {
+                            $tag = Tag::where('slug', '=', $slug)->first();
+                            $tagIds[] = $tag->id;
+                        }
+
+                    }
+
+                    $scene->tag()->sync($tagIds);
+
+                    if(isset($thumbnails))
+                    {
+                        foreach ($thumbnails as $key => $value)
+                        {
+                            $thumbnail = new Thumbnail;
+                            $thumbnail->url = $value;
+                            $thumbnail->scene_id = $scene->id;
+                            $thumbnail->save();
+                        }
                     }
 
                 }
-
-                $scene->tag()->sync($tagIds);
-
-                foreach ($thumbnails as $key => $value)
-                {
-                    $thumbnail = new Thumbnail;
-                    $thumbnail->url = $value;
-                    $thumbnail->scene_id = $scene->id;
-                    $thumbnail->save();
-                }
-            }
-            else
-            {
-                return redirect('imports')->with('errors', 'Import Error')->with('reply_class','danger');
             }
 
             return redirect('imports')->with('reply', 'Import Successfully')->with('reply_class','success');
