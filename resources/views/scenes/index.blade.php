@@ -96,19 +96,17 @@
                 responsive: true
         });
 
-        $("#datatables").on('click','.delete-btn', function(){
-            $(this).click(function(){
+        $('#dataTables').on('click','.delete-btn', function(){
             var id = $(this).data('id');
-                $.ajax({
-                    url: '/scenes/' + id,
-                    type: 'POST',
-                    data: { _method:"DELETE" },
-                    success: function( msg ) {
-                        var td = $("#td-" + id);
-                        td.css("background-color","red")
-                        td.slideUp("slow");
-                    }
-                });
+            $.ajax({
+                url: '/scenes/' + id,
+                type: 'POST',
+                data: { _method:"DELETE" },
+                success: function( msg ) {
+                    var td = $("#td-" + id);
+                    td.css("background-color","red")
+                    td.slideUp("slow");
+                }
             });
         });
     });
