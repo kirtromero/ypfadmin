@@ -165,7 +165,7 @@ class ImportController extends Controller
         $affiliate_id = $request->get('affiliate_id');
         $site_id = $request->get('site_id');
         $errors = array();
-        $dump = explode("\n", $request->get('dump'));
+        $dump = explode("\n", trim($request->get('dump')));
 
         $format = explode("|", $format);
 
