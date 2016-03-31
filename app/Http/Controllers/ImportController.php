@@ -164,7 +164,7 @@ class ImportController extends Controller
         $format = $request->get('dump_format');
         $affiliate_id = $request->get('affiliate_id');
         $site_id = $request->get('site_id');
-
+        $errors = array();
         $dump = explode("\n", $request->get('dump'));
 
         $format = explode("|", $format);
@@ -178,9 +178,15 @@ class ImportController extends Controller
         $thumbnails_key = array_search('{thumbnails}', $format);
         $keywords_key = array_search('{keywords}', $format);
 
-        foreach($dump as $items)
+        foreach($dump as $key => $items)
         {
             $item = explode("|", $items);
+
+            if(!isset($item[$link_key]) && $item[$link_key] == "")
+            {
+                $errors[] = "item :" . $key;
+                continue;
+            }
 
             $count = Scene::where('link','=', $item[$link_key] )->count();
 
@@ -282,7 +288,14 @@ class ImportController extends Controller
 
                 }
             }
+        }
 
+        if($errors)
+        {
+            return redirect('imports')->with('errors', 'Some import failed' . print_r($errors))->with('reply_class','success');
+        }
+        else
+        {
             return redirect('imports')->with('reply', 'Import Successfully')->with('reply_class','success');
         }
     }

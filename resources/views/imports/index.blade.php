@@ -90,7 +90,7 @@
                     </div>
                     <div class="form-group">
                         <label>dump</label>
-                        <textarea class="form-control" name="dump" rows="20"></textarea>
+                        <textarea class="form-control" name="dump" rows="20" wrap="off"></textarea>
                     </div>
                     <button type="submit" class="btn btn-default">Submit Button</button>
                     <button type="reset" class="btn btn-default">Reset Button</button>
