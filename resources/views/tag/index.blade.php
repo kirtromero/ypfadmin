@@ -6,6 +6,16 @@
 -->
 @section('page-css')
 <link rel="stylesheet" type="text/css" href="{{ url('bower_components/morrisjs/morris.css') }}">
+<style type="text/css">
+.btn {
+	width: 80px;
+    margin-bottom: 2px;
+    display: block;
+}
+.options {
+	width: 80px;
+}
+</style>
 @stop
 
 
@@ -39,7 +49,8 @@
 								<th>Name</th>
 								<th>Sort</th>
 								<th>Status</th>
-								<th></th>
+								<th>Show</th>
+								<th class="options"></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -80,6 +91,7 @@ $(document).ready(function() {
 	        { data: 'name' },
 	        { data: 'sort' },
 	        { data: 'active' },
+	        { data: 'show' },
 	        { data: 'html' }
 	    ]
 	});
@@ -96,6 +108,33 @@ $(document).ready(function() {
 			alert( "Data Saved: " + msg );
 		});
 	});
+
+	$("#dataTables").on('click', '.show-btn',function(e){
+		e.preventDefault();
+		var id = $(this).data('id');
+		$.ajax({
+			method: "POST",
+			url: "/tags/show",
+			data: { id: id }
+		})
+		.done(function( msg ) {
+			alert( "Data Saved: " + msg );
+		});
+	});
+
+	$('#dataTables').on('click','.delete-btn', function(){
+        var id = $(this).data('id');
+        $.ajax({
+            url: '/tags/' + id,
+            type: 'POST',
+            context: $(this).parent().parent(),
+            data: { _method:"DELETE" },
+            success: function( msg ) {
+                $(this).css("background-color","red")
+                $(this).slideUp("slow");
+            }
+        });
+    });
 });
 </script>
 @stop

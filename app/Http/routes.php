@@ -27,7 +27,8 @@ Route::group(['middleware' => ['auth']], function()
 	Route::get('tags/all', 'TagController@ajaxTags');
 	Route::resource('tags', 'TagController');
 	Route::post('tags/activate', 'TagController@activateTag');
-
+	Route::post('tags/show', 'TagController@showTag');
+	Route::post('tags/destroy', 'TagController@ajaxDestroy');
 
 	Route::resource('thumbnails', 'ThumbnailController');
 

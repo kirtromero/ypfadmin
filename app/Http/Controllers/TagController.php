@@ -95,7 +95,16 @@ class TagController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Tag::destroy( $id );
+
+        return redirect('tags')->with('reply', 'Tag Deleted Successfully')->with('reply_class','success');
+    }
+
+    public function ajaxDestroy($id)
+    {
+        Tag::destroy( $id );
+
+        return "Tag deleted successfully";
     }
 
     public function activateTag(Request $request)
@@ -109,8 +118,17 @@ class TagController extends Controller
             $tag->sort = $count + 1;
             $tag->save();
 
-            return "Tag activated";
+            return "Tag Activated";
         }
+    }
+
+    public function showTag(Request $request)
+    {
+        $tag = Tag::find($request->get('id'));
+        $tag->show = ($tag->show == 0) ? 1 : 0;
+        $tag->save();
+
+        return "Tag display successfully changed!";
     }
 
     public function ajaxTags(Request $request)
@@ -130,6 +148,9 @@ class TagController extends Controller
                 break;
             case '2':
                 $orderBy = "active";
+                break;
+            case '3':
+                $orderBy = "show";
                 break;
             default:
                 $orderBy = "name";
@@ -164,17 +185,23 @@ class TagController extends Controller
                 $html .= '<a href="/tags/'.$tag->id.'/edit" data-id="'.$tag->id.'" class="btn btn-xs btn-warning activate">Deactivate</a>';
             }
 
+            if($tag->show == 0)
+            {
+                $html .= '<a href="/tags/'.$tag->id.'/edit" data-id="'.$tag->id.'" class="btn btn-xs btn-success show-btn">Show</a>';
+            }
+            else
+            {
+                $html .= '<a href="/tags/'.$tag->id.'/edit" data-id="'.$tag->id.'" class="btn btn-xs btn-warning show-btn">Hide</a>';
+            }
+
             $html .= '<a href="/tags/'.$tag->id.'/edit" class="btn btn-xs btn-primary">Edit</a>';
-            $html .= '<form action="/tags/'.$tag->id.'" method="POST">
-                        <input type="hidden" name="_method" value="DELETE">
-                        <input type="hidden" name="_token" value="'.csrf_token().'">
-                        <button class="btn btn-xs btn-danger" type="submit">Delete</button>
-                    </form>';
+            $html .= '<a class="btn btn-xs btn-danger delete-btn" data-id="'.$tag->id.'" type="submit">Delete</a>';
 
             $data['data'][] = array(
                                 'name' => $tag->name,
                                 'sort' => $tag->sort,
                                 'active' => $tag->active,
+                                'show' => $tag->show,
                                 'html' => $html
                                 );
         }
