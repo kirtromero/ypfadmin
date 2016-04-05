@@ -51,26 +51,26 @@ class ScenesController extends Controller
         $scene->primary_thumbnail = $request->input( 'primary_thumbnail', '' );
         $scene->save();
 
-        $tags = trim($request->input( 'tags', '' ));
-        $tagsAr = explode(",", $tags);
-        $textAr = array_filter($tagsAr, 'trim');
-        $tagIds = array();
+        $scenes = trim($request->input( 'scenes', '' ));
+        $scenesAr = explode(",", $scenes);
+        $textAr = array_filter($scenesAr, 'trim');
+        $sceneIds = array();
 
-        foreach($textAr as $tagtext)
+        foreach($textAr as $scenetext)
         {
-            $tagCount = Tag::where('name', '=', $tagtext)->count();
-            if($tagCount == 0)
+            $sceneCount = scene::where('name', '=', $scenetext)->count();
+            if($sceneCount == 0)
             {
-                $tag = new Tag;
-                $tag->name = $tagtext;
-                $tag->save();
+                $scene = new scene;
+                $scene->name = $scenetext;
+                $scene->save();
             }
 
-            $tag = Tag::where('name', '=', $tagtext)->first();
-            $tagIds[] = $tag->id;
+            $scene = scene::where('name', '=', $scenetext)->first();
+            $sceneIds[] = $scene->id;
         }
 
-        $scene->tag()->sync($tagIds);
+        $scene->scene()->sync($sceneIds);
 
 
         $thumbnails = trim($request->input( 'thumbnails', '' ));
@@ -111,7 +111,8 @@ class ScenesController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data['scene'] = Scene::findOrFail($id);
+        return view('scenes.edit', $data);
     }
 
     /**
@@ -123,7 +124,16 @@ class ScenesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $scene = Scene::findOrFail($id);
+        $scene->title = $request->input('title');
+        $scene->link = $request->input('link');
+        $scene->duration = $request->input('duration');
+        $scene->rating = $request->input('rating');
+        $scene->primary_thumbnail = $request->input('primary_thumbnail');
+        $tag->save();
+
+
+        return redirect('scenes/' . $scene->id .'/edit')->with('reply', 'Scene update Successfully')->with('reply_class','success');
     }
 
     /**
@@ -137,5 +147,78 @@ class ScenesController extends Controller
         Scene::destroy( $id );
 
         return redirect('scenes')->with('reply', 'Scene Deleted Successfully')->with('reply_class','success');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function ajaxDestroy($id)
+    {
+        Tag::destroy( $id );
+
+        return "Tag deleted successfully";
+    }
+
+    public function ajaxScenes(Request $request)
+    {
+        $search = $request->input('search','');
+        $skip = $request->input('start');
+        $limit = $request->input('length');
+        $order = $request->input('order');
+        $orderDir = $order[0]['dir'];
+        $orderBy = "created_at";
+
+        switch ($order[0]['column']) {
+            case '1':
+                $orderBy = "title";
+                break;
+            case '2':
+                $orderBy = "duration";
+                break;
+            case '3':
+                $orderBy = "links";
+                break;
+            default:
+                $orderBy = "created_at";
+                break;
+        }
+
+        if($search)
+        {
+            $iTotalDisplayRecords = Scene::where('title',"like","%". $search['value'] ."%")->count();
+            $scenes = Scene::where('title',"like","%". $search['value'] ."%")->orderBy($orderBy, $orderDir)->skip($skip)->take($limit)->get();
+            $iTotalRecords = $scenes->count();
+        }
+        else
+        {
+            $iTotalDisplayRecords = Scene::count();
+            $scenes = Scene::orderBy($orderBy, $orderDir)->skip($skip)->take($limit)->get();
+            $iTotalRecords = $scenes->count();
+        }
+
+        $data['iTotalRecords'] = $iTotalRecords;
+        $data['iTotalDisplayRecords'] = $iTotalDisplayRecords;
+
+        foreach ($scenes as $key => $scene)
+        {
+            $html = "";
+
+            $html .= '<a href="/scenes/'.$scene->id.'/edit" class="btn btn-xs btn-primary">Edit</a>';
+            $html .= '<a class="btn btn-xs btn-danger delete-btn" data-id="'.$scene->id.'" type="submit">Delete</a>';
+
+            $data['data'][] = array(
+                                'thumbnail' => '<img src="'.$scene->primary_thumbnail.'">',
+                                'title' => $scene->title,
+                                'duration' => $scene->duration,
+                                'link' => $scene->link,
+                                'date' => $scene->created_at,
+                                'html' => $html
+                                );
+        }
+
+        return response()->json($data);
     }
 }

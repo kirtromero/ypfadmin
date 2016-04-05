@@ -21,7 +21,10 @@ Route::group(['middleware' => ['auth']], function()
 	Route::resource('imports', 'ImportController');
 	Route::post('imports/dump', 'ImportController@postfeeds');
 
+	//Scenes
+	Route::get('scenes/all', 'ScenesController@ajaxScenes');
 	Route::resource('scenes', 'ScenesController');
+	Route::post('scenes/destroy', 'ScenesController@ajaxDestroy');
 
 	//Tags
 	Route::get('tags/all', 'TagController@ajaxTags');

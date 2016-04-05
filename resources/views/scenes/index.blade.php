@@ -44,21 +44,6 @@
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach($scenes as $scene)
-                            <tr class="gradeX" id="td-{{ $scene->id }}">
-                                <td><img src="{{ $scene->primary_thumbnail }}"></td>
-                                <td>{{ $scene->title }}</td>
-                                <td>{{ $scene->duration }}</td>
-                                <td>{{ $scene->link }}</td>
-                                <td>{{ $scene->created_at }}</td>
-                                <td>
-                                    <a href="/scenes/{{ $scene->id }}/edit" class="btn btn-xs btn-primary">Edit</a>
-                                    <a class="btn btn-xs btn-danger delete-btn" data-id="{{ $scene->id }}">Delete</a>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
                     </table>
                 </div>
             </div>
@@ -93,7 +78,19 @@
 
     $(document).ready(function() {
         $('#dataTables').DataTable({
-                responsive: true
+            responsive: true,
+            ajax: '/scenes/all',
+            source: 'data',
+            processing: true,
+            serverSide: true,
+            columns: [
+                { data: 'thumbnail', "orderable": false  },
+                { data: 'title'},
+                { data: 'duration' },
+                { data: 'link', "orderable": false  },
+                { data: 'date' },
+                { data: 'html' }
+            ]
         });
 
         $('#dataTables').on('click','.delete-btn', function(){
@@ -101,11 +98,11 @@
             $.ajax({
                 url: '/scenes/' + id,
                 type: 'POST',
+                context: $(this).parent().parent(),
                 data: { _method:"DELETE" },
                 success: function( msg ) {
-                    var td = $("#td-" + id);
-                    td.css("background-color","red")
-                    td.slideUp("slow");
+                    $(this).css("background-color","red")
+                    $(this).slideUp("slow");
                 }
             });
         });

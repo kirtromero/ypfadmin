@@ -194,7 +194,8 @@ class ImportController extends Controller
             {
                 if(isset($item[$thumbnails_key]))
                 {
-                    $thumbnails = explode(";", $item[$thumbnails_key]);
+                    $thumbnails = $item[$thumbnails_key];
+
                     $primary_thumbnail = isset($item[$primary_thumbnail_key]) ? $item[$primary_thumbnail_key] : $thumbnails[1];
                 }
                 else
@@ -277,6 +278,16 @@ class ImportController extends Controller
 
                     if(isset($thumbnails))
                     {
+
+                        if(strpos($thumbnails,";"))
+                        {
+                            $thumbnails = explode(";", $thumbnails);
+                        }
+                        else
+                        {
+                            $thumbnails = explode(",", $thumbnails);
+                        }
+
                         foreach ($thumbnails as $key => $value)
                         {
                             $thumbnail = new Thumbnail;
