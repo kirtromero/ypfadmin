@@ -43,9 +43,11 @@
                         </thead>
                         <tbody>
                         	@foreach($affiliates as $affiliate)
-                        	<td>{{ $affiliate->name }}</td>
-                        	<td><a href="{{ $affiliate->url }}">{{ $affiliate->url }}</a> </td>
-                        	<td><a class="btn btn-primary" href="/affiliates/{{ $affiliate->id }}/edit">Edit</a></td>
+                        	<tr>
+	                        	<td>{{ $affiliate->name }}</td>
+	                        	<td><a href="{{ $affiliate->url }}">{{ $affiliate->url }}</a> </td>
+	                        	<td><a class="btn btn-primary" href="/affiliates/{{ $affiliate->id }}/edit">Edit</a></td>
+                        	</tr>
                         	@endforeach
                         </tbody>
                     </table>
