@@ -28,6 +28,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('inspire')
                  ->hourly();
 
-        $schedule->command('scan:feeds 3')->everyThirtyMinutes();
+        $schedule->command('scan:feeds 3')->everyTenMinutes();
     }
 }
