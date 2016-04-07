@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Affiliate;
+use App\Feed;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -17,6 +18,7 @@ class AffiliatesController extends Controller
      */
     public function index()
     {
+        $data['affiliates'] = Affiliate::all();
         $data['page_title'] = "Affiliates";
         return view('affiliates.index', $data);
     }
@@ -67,7 +69,8 @@ class AffiliatesController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data['affiliate'] = Affiliate::findOrFail($id);
+        return view('affiliates.edit', $data);
     }
 
     /**
@@ -79,7 +82,17 @@ class AffiliatesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $affiliate = Affiliate::findOrFail($id);
+        $affiliate->name = $request->input('name');
+        $affiliate->url = $request->input('url');
+        $affiliate->save();
+
+        $feed = new Feed;
+        $feed->affiliate_id = $affiliate->id;
+        $feed->url = $request->input('feedUrl');
+        $feed->save();
+
+        return redirect()->back()->with('reply', 'Scene update Successfully')->with('reply_class','success');
     }
 
     /**

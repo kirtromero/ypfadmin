@@ -130,7 +130,7 @@ class ScenesController extends Controller
         $scene->duration = $request->input('duration');
         $scene->rating = $request->input('rating');
         $scene->primary_thumbnail = $request->input('primary_thumbnail');
-        $tag->save();
+        $scene->save();
 
 
         return redirect('scenes/' . $scene->id .'/edit')->with('reply', 'Scene update Successfully')->with('reply_class','success');
