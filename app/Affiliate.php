@@ -10,4 +10,9 @@ class Affiliate extends Model
     {
         return $this->belongsTo('App\Scene');
     }
+
+    public function feeds()
+    {
+        return $this->hasMany('App\Feed');
+    }
 }
