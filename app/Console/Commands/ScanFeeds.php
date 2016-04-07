@@ -47,13 +47,20 @@ class ScanFeeds extends Command
         $site_id = 1;
         $affiliate_id = $this->argument('affiliate_id');
 
-        $feed = Feed::where("affiliate_id","=", $affiliate_id)->orderBy("updated_at", "DESC")->skip(1)->first();
 
-        $xml = simplexml_load_file($feed->url, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $feeds = Feed::where("affiliate_id","=", $affiliate_id)->where("scan","=",1)->get();
 
-        $feed->url = $feed->url;
+        foreach ($feeds as $key => $feed) {
+            $feed = Feed::find($feed->id);
+            $feed->scan = 0;
+            $feed->save();
+        }
+
+        $feed = Feed::where("affiliate_id","=", $affiliate_id)->orderBy("updated_at", "ASC")->first();
+        $feed->scan = 1;
         $feed->save();
 
+        $xml = simplexml_load_file($feed->url, 'SimpleXMLElement', LIBXML_NOCDATA);
         foreach ($xml->channel->item as $key => $item)
         {
             $count = Scene::where('link',"=", $item->link)->count();
@@ -116,5 +123,8 @@ class ScanFeeds extends Command
                 $scene->save();
             }
         }
+
+        echo $feed->url;
+
     }
 }
